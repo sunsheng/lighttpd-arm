@@ -28,5 +28,5 @@ PLUGIN_INIT(mod_userdir)
 PLUGIN_INIT(mod_usertrack)
 PLUGIN_INIT(mod_vhostdb)
 // PLUGIN_INIT(mod_webdav)
-PLUGIN_INIT(mod_openssl)
+// PLUGIN_INIT(mod_openssl)
 
