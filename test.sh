@@ -2,7 +2,7 @@
 
 # set -x
 adb shell kill $(adb shell pidof lighttpd)
-# set -e
+set -e
 adb shell "mkdir -p /data/local/tmp/conf"
 adb shell "mkdir -p /data/local/tmp/www"
 adb shell "mkdir -p /data/local/tmp/logs"
@@ -20,3 +20,4 @@ adb forward tcp:8000 tcp:80
 
 curl -v http://127.0.0.1:8000/lighttpd-arm/
 
+# curl -v http://127.0.0.1:8000/s?wd=abc
