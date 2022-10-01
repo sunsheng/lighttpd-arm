@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export NDK=/Users/sunsheng/Library/Android/sdk/ndk/24.0.8215888
-
 export ZLIB=zlib-1.2.12
 export PCRE=pcre-8.44
 export OPENSSL=openssl-1.1.1i
@@ -16,7 +14,7 @@ cd src
 wget -nc https://zlib.net/$ZLIB.tar.xz
 wget -nc https://onboardcloud.dl.sourceforge.net/project/pcre/pcre/8.44/pcre-8.44.tar.gz
 # wget -nc https://ftp.pcre.org/pub/pcre/$PCRE.tar.gz
-wget -nc https://www.openssl.org/source/$OPENSSL.tar.gz
+# wget -nc https://www.openssl.org/source/$OPENSSL.tar.gz
 wget -nc https://download.lighttpd.net/lighttpd/releases-1.4.x/$LIGHTTPD.tar.xz
 
 if [ ! -d ./$ZLIB ]; then
@@ -27,9 +25,11 @@ if [ ! -d ./$PCRE ]; then
 tar xvf $PCRE.tar.gz
 fi
 
-if [ ! -d ./$OPENSSL ]; then
-tar xvf $OPENSSL.tar.gz
-fi
+# if [ ! -d ./$OPENSSL ]; then
+# tar xvf $OPENSSL.tar.gz
+# fi
+
+rm -rf ./$LIGHTTPD
 
 if [ ! -d ./$LIGHTTPD ]; then
 tar xvf $LIGHTTPD.tar.xz
@@ -38,7 +38,8 @@ cd ..
 
 ##############################################################
 
-export TARGET=i686-linux-android
+export NDK=/Users/sunsheng/Library/Android/sdk/ndk-bundle
+export TARGET=aarch64-linux-android
 export API=26
 export BLD=`pwd`
 export ANDROID_NDK_HOME=$NDK
@@ -60,7 +61,6 @@ exit
 fi
 
 set -e
-# rm -rf include bin dist lib sbin share
 
 if [ ! -f "$BLD/include/zlib.h" ]; then
 cd $BLD/src/$ZLIB
@@ -76,14 +76,17 @@ fi
 
 
 
-
 echo BUILDING LIGHTTPD
 cd $BLD/src/$LIGHTTPD
-if [ -f "Makefile" ]; then
-make distclean
-fi
-rm -f src/plugin-static.h 
-cp $BLD/plugin-static.h ./src/
+
+cp $BLD/patch/* src/
+./autogen.sh 
+
+# if [ -f "Makefile" ]; then
+#     make distclean
+# fi
+# rm -f src/plugin-static.h 
+# cp $BLD/plugin-static.h ./src/
 CPPFLAGS=-DLIGHTTPD_STATIC LIGHTTPD_STATIC=yes ./configure -C --host=$TARGET --enable-static=yes --enable-shared=no --disable-shared --prefix=$BLD --disable-ipv6 --with-pcre=$BLD --with-zlib=$BLD
 sed -i.bak '/lighttpd-mod_webdav/d' ./src/Makefile
 make install-strip
